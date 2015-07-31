@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Null Industries - Blog</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="generator" content="Webflow">
+  <link rel="stylesheet" type="text/css" href="css/normalize.css">
+  <link rel="stylesheet" type="text/css" href="css/responsive.css">
+  <link rel="stylesheet" type="text/css" href="css/all.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/webfont/1.4.7/webfont.js"></script>
+  <script>
+    WebFont.load({
+      google: {
+        families: ["Montserrat:400,700","Varela Round:400"]
+      }
+    });
+  </script>
+  <script type="text/javascript" src="js/modernizr.js"></script>
+</head>
+<body>
+  <div class="section hero blog">
+    <header class="nav-bar">
+      <div class="w-container">
+        <div class="w-row">
+          <div class="w-col w-col-4 w-clearfix brand-column">
+            <a href="/index.html"><div class="company">Nullindustries</div></a>
+          </div>
+<nav class="w-col w-col-8 nav-column"><a class="nav-link" href="#services">services</a><a class="nav-link" href="#work">work</a><a class="nav-link" href="#contact">contact</a><a class="nav-link" href="/blog.html">blog</a>
+          </nav>
+        </div>
+      </div>
+    </header>
+    <div class="w-container hello">
+      <h1 class="hero-heading">Need to Incentivate your team to write tests ?</h1>
+      </div>
+    </div>
+  </div>
+  <div class="section grey" id="work">
+    <div class="w-container">
+      
+      <div class="box--date">
+        <i>30 . 07 . 2015</i>
+      </div>
+      <div class="w-row text--left single--post">
+
+        <p>Why?</p>
+        <ul class="list--steps">
+          <li>Nobody will write hard to write tests, so let´s make it simpler *THEN* Write simple tests.</li>
+          <li>The code may change in the future and then will be imposible to update the tests if they are horrible *THEN* Write maintainable tests.</li>
+          <li>Sometimes is hard to make it just work *THEN* Setup or do an easy setup tutorial for your team.</li>
+          <li>Sometimes you will think this is horrible! *THEN* you will want to write tests because is simple!</li>
+        </ul>
+        <p>Samples are writen for Android with JUnit 4, java and Espresso.</p>
+
+        <p>A simple example can be for a "difficult" test:</p>
+
+        <pre>
+          @RunWith(AndroidJUnit4.class)
+          @LargeTest
+          public class LoginActivityTests {
+
+              @Rule
+              public ActivityTestRule&#60;LoginActivity&#62 mLoginActivityRule = new ActivityTestRule&#60;&#62(LoginActivity.class);
+
+              @Test
+              public void emptyUsernameShowsError() {
+                // Write input te
+                onView(withId(R.id.login_username)).perform(typeText("clark.kent@gmail.com"));
+                onView(withId(R.id.login_password)).perform(typeText("I*am*superman"), closeSoftKeyboard());
+                  
+                  // Click
+              onView(withId(R.id.login_button)).perform(ViewActions.click());
+
+              // Check success text?
+              onView(withText(R.string.login_success)).check(matches(ViewMatchers.isDisplayed()));
+              }
+
+          }
+        </pre>
+
+        <p>Looks simple, but have you thought how will be to see 30 test funcions and just try to understand which actions are been performed on which field filtered by id or by ViewMatcher's? even if each matcher is imported using static imports it looks dirty, come on!.</p>
+
+        <p>It´s simpler to define simple actions in your custom MyViewActions.java class like:</p>
+
+        <pre>
+          public class MyTestActions {
+
+            public static void write(@IdRes int id, String text) {
+                onView(withId(id)).perform(typeText(text));
+            }
+
+            public static void writeAndCloseKeyboard(@IdRes int id, String text) {
+                onView(withId(id)).perform(typeText(text), closeSoftKeyboard());
+            }
+
+          public static void click(@IdRes int id) {
+                onView(withId(id)).perform(ViewActions.click());
+            }
+
+            public static void isDisplayed(@StringRes String idContent) {
+                onView(withText(idContent)).check(matches(ViewMatchers.isDisplayed()));
+            }
+
+          }
+        </pre>  
+
+        <p>And then the tests will be like:</p>
+
+        <pre>
+          import static *.MyViewMatcher.write;
+          import static *.MyViewMatcher.writeAndCloseKeyboard;
+          import static *.MyViewMatcher.click;
+          import static *.MyViewMatcher.isDisplayed;
+
+          @RunWith(AndroidJUnit4.class)
+          @LargeTest
+          public class LoginActivityTests {
+
+              @Rule
+              public ActivityTestRule<LoginActivity> mLoginActivityRule = new ActivityTestRule<>(LoginActivity.class);
+
+              @Test
+              public void emptyUsernameShowsError() {
+                // Write input te
+                write(R.id.login_username, "clark.kent@gmail.com");
+                writeAndCloseKeyboard(R.id.login_password, "I*am*superman");
+                  
+                  // Click
+              click(R.id.login_button)
+
+              // Check success text?
+              isDisplayed(R.string.login_success)
+              }
+
+          }
+        </pre>
+        <p>The depenencies, in case that you want to use this code in your project are:</p>
+
+        <pre>
+          androidTestCompile 'com.android.support.test:runner:0.3'
+          androidTestCompile 'com.android.support.test:rules:0.3'
+          androidTestCompile 'com.android.support:support-annotations:22.2.0'
+          androidTestCompile 'com.android.support.test.espresso:espresso-core:2.2'
+          androidTestCompile ('com.android.support.test.espresso:espresso-contrib:2.2'){
+              exclude group: 'com.android.support', module: 'appcompat'
+              exclude group: 'com.android.support', module: 'support-v4'
+              exclude module: 'recyclerview-v7'
+          }
+        </pre>
+        <p>Thanks to:</p>
+
+        <ul class="">
+          <li>
+            <a href="https://www.youtube.com/watch?v=t6ffRgpD0t0">[DroidconDE - AndMaciej Górski].</a>
+          </li>
+          <li>
+            <a href="https://www.youtube.com/watch?v=D-xra_X9Nwg&index=11&list=PLVnuKbla7wewsrNP00H9Yhk-Vh6tkEfEQ">[GOTO; - Trisha Gee: "Level Up Your Automated Tests"].</a>
+          </li>
+          <li>
+            <a href="https://www.youtube.com/watch?v=1HUl1cTFGR4&index=10&list=PLVnuKbla7wewsrNP00H9Yhk-Vh6tkEfEQ">[GOGO; - Jay Fields: "Unselfish Testing"].</a>
+          </li>
+        </ul>
+
+        <p class="author--post">by - Daniel</p>
+
+      </div>
+    </div>
+  </div>
+  
+  <footer class="section footer">
+    <div class="w-container">
+      <div class="footer-text">Copyright 2015 Nullindustries. All rights reserved. | Phone: (07) 5512 3456</div>
+    </div>
+  </footer>
+  <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+  <script type="text/javascript" src="js/scroll.js"></script>
+  <!--[if lte IE 9]><script src="https://cdnjs.cloudflare.com/ajax/libs/placeholders/3.0.2/placeholders.min.js"></script><![endif]-->
+</body>
+</html>
